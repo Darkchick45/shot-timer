@@ -284,7 +284,17 @@ function renderHistory() {
         header.className = 'string-header';
         
         const runNum = allRuns.length - index;
-        header.innerHTML = `<span>Run ${runNum} <span style="font-size:0.75rem; font-weight:normal; display:block; color:var(--text-muted);">${run.date} - ${run.location}</span></span> <span>${run.shots[run.shots.length-1].toFixed(2)}s</span>`;
+        const lastShotTime = run.shots.length > 0 ? run.shots[run.shots.length-1].toFixed(2) : "0.00";
+        header.innerHTML = `
+            <div style="line-height: 1.2;">
+                <span>Run ${runNum}</span>
+                <span style="font-size:0.75rem; font-weight:normal; display:block; color:var(--text-muted); margin-top:2px;">${run.date} - ${run.location}</span>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <span>${lastShotTime}s</span>
+                <button class="delete-btn" data-id="${run.id}">X</button>
+            </div>
+        `;
         
         const splitsClone = document.createElement('div');
         splitsClone.style.marginTop = '10px';
@@ -361,4 +371,15 @@ importFile.addEventListener('change', (e) => {
         importFile.value = '';
     };
     reader.readAsText(file);
+});
+
+// DELETION LOGIC
+document.getElementById('historyContainer').addEventListener('click', (e) => {
+    if (e.target.classList.contains('delete-btn')) {
+        const idToRemove = parseInt(e.target.getAttribute('data-id'), 10);
+        if (confirm("Delete this run? This cannot be undone.")) {
+            allRuns = allRuns.filter(r => r.id !== idToRemove);
+            renderHistory();
+        }
+    }
 });
