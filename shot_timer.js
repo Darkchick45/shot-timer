@@ -253,7 +253,7 @@ newStringBtn.addEventListener('click', async () => {
     startBtn.innerText = "START";
     
     newStringBtn.disabled = false;
-    newStringBtn.innerText = "SAVE & NEW STRING";
+    newStringBtn.innerText = "SAVE & NEW ROUND";
 });
 
 function renderHistory() {
