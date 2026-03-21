@@ -4,39 +4,65 @@ let microphone;
 let javascriptNode;
 let startTime;
 let isRunning = false;
-const threshold = 0.3; // Sensitivity: Adjust this (0.0 to 1.0)
 const noSleep = new NoSleep();
 
 const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
+const newStringBtn = document.getElementById('newStringBtn');
 const display = document.getElementById('display');
 const splitsDiv = document.getElementById('splits');
+const currentStringDiv = document.getElementById('currentString');
+const settingsPanel = document.getElementById('settingsPanel');
+
+// Inputs
+const delayType = document.getElementById('delayType');
+const parTimeInput = document.getElementById('parTime');
+const sensitivitySlider = document.getElementById('sensitivity');
+
+let currentShots = [];
+let runCount = 1;
+let parOsc; // Keep track so we can cancel it if stopped early
 
 startBtn.addEventListener('click', async () => {
-    // 1. Enable NoSleep (iOS hack to keep screen on)
     noSleep.enable();
 
-    // 2. Resume or create AudioContext (Must be triggered by user click on iOS)
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
     
     let stream;
     try {
-        // Request mic access immediately on click to comply with browser policies
         stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     } catch (err) {
-        console.error("Microphone access denied or error:", err);
-        alert("Microphone access is required to detect shots.");
+        alert("Microphone access is required.");
         return;
     }
     
-    // 3. Short delay before the "Beep" (Simulating a real shot timer)
-    startBtn.disabled = true;
-    startBtn.innerText = "GET READY...";
+    // UI Updates
+    startBtn.style.display = 'none';
+    settingsPanel.style.display = 'none';
+    newStringBtn.style.display = 'none';
+    currentStringDiv.style.display = 'block';
     
+    // Clear current run (but keep history)
+    currentShots = [];
+    splitsDiv.innerHTML = '';
+    display.innerText = "READY";
+    
+    // Calculate Delay
+    let delayMs = 0;
+    if (delayType.value === 'fixed') delayMs = 3000;
+    else if (delayType.value === 'random') delayMs = 2000 + Math.random() * 3000;
+
     setTimeout(() => {
-        playBeep();
-        initCapture(stream);
-    }, 2000 + Math.random() * 2000); // Random delay 2-4 seconds
+        if (startBtn.style.display === 'none' && !isRunning) { // ensure not cancelled
+            playBeep();
+            initCapture(stream);
+        }
+    }, delayMs);
 });
 
 function playBeep() {
@@ -44,24 +70,45 @@ function playBeep() {
     const gain = audioContext.createGain();
     osc.connect(gain);
     gain.connect(audioContext.destination);
+    
     osc.frequency.value = 1000;
-    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.5);
+    gain.gain.setValueAtTime(1, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
     osc.start();
     osc.stop(audioContext.currentTime + 0.5);
     
     startTime = audioContext.currentTime;
     isRunning = true;
-    startBtn.style.display = 'none';
-    stopBtn.style.display = 'inline-block';
+    stopBtn.style.display = 'block';
+    
+    // Schedule Par Time beep if set
+    const pTime = parseFloat(parTimeInput.value);
+    if (pTime > 0) {
+        parOsc = audioContext.createOscillator();
+        const parGain = audioContext.createGain();
+        parOsc.connect(parGain);
+        parGain.connect(audioContext.destination);
+        
+        parOsc.frequency.value = 1200; // higher pitch for par time
+        parGain.gain.setValueAtTime(0, startTime + pTime);
+        parGain.gain.linearRampToValueAtTime(1, startTime + pTime + 0.05);
+        parGain.gain.exponentialRampToValueAtTime(0.001, startTime + pTime + 0.5);
+        parOsc.start(startTime + pTime);
+        parOsc.stop(startTime + pTime + 0.5);
+    }
+    
     updateDisplay();
 }
 
 async function initCapture(stream) {
+    if (microphone) microphone.disconnect();
+    if (analyser) analyser.disconnect();
+    if (javascriptNode) javascriptNode.disconnect();
+
     microphone = audioContext.createMediaStreamSource(stream);
     analyser = audioContext.createAnalyser();
     analyser.fftSize = 256;
 
-    // Use a ScriptProcessor to monitor volume levels
     javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
     
     microphone.connect(analyser);
@@ -74,35 +121,46 @@ async function initCapture(stream) {
         const array = new Float32Array(analyser.fftSize);
         analyser.getFloatTimeDomainData(array);
         
-        // Find the peak in this buffer
         let peak = 0;
         for (let i = 0; i < array.length; i++) {
             if (Math.abs(array[i]) > peak) peak = Math.abs(array[i]);
         }
 
-        // If peak exceeds threshold, it's a "shot"
+        // Sensitivity 0-100 mapped to threshold logic
+        const val = parseInt(sensitivitySlider.value);
+        let threshold = (100 - val) / 100;
+        if (threshold < 0.02) threshold = 0.02;
+
         if (peak > threshold) {
             recordShot(audioContext.currentTime - startTime);
         }
     };
 }
 
-let lastShotTime = 0;
 function recordShot(time) {
-    // Debounce to prevent one shot being counted multiple times (0.1s lockout)
-    if (time - lastShotTime < 0.1) return;
+    // 0.12s lockout to prevent double taps
+    const lastShotTime = currentShots.length > 0 ? currentShots[currentShots.length - 1] : 0;
+    if (time - lastShotTime < 0.12) return;
     
     const split = (time - lastShotTime).toFixed(2);
-    lastShotTime = time;
+    currentShots.push(time);
 
     const entry = document.createElement('div');
     entry.className = 'shot-entry';
-    entry.innerHTML = `<span>Shot ${splitsDiv.children.length + 1}</span> <span>${time.toFixed(2)}s (+${split})</span>`;
+    
+    const shotNum = document.createElement('span');
+    shotNum.innerText = `Shot ${currentShots.length}`;
+    
+    const times = document.createElement('span');
+    times.innerHTML = `${time.toFixed(2)}s <span class="split-time">(+${split})</span>`;
+    
+    entry.appendChild(shotNum);
+    entry.appendChild(times);
+    
     splitsDiv.prepend(entry);
     
-    // Pulse the screen red for visual feedback
-    document.body.style.background = 'red';
-    setTimeout(() => document.body.style.background = '#111', 50);
+    document.body.style.background = '#ef4444';
+    setTimeout(() => document.body.style.background = 'var(--bg-color)', 50);
 }
 
 function updateDisplay() {
@@ -111,8 +169,48 @@ function updateDisplay() {
     requestAnimationFrame(updateDisplay);
 }
 
-stopBtn.addEventListener('click', () => {
+function stopTimer() {
     isRunning = false;
-    noSleep.disable();
-    location.reload(); // Simple way to reset everything
+    stopBtn.style.display = 'none';
+    startBtn.style.display = 'block';
+    startBtn.innerText = "RESUME / START";
+    settingsPanel.style.display = 'block';
+    
+    if (parOsc) {
+        try { parOsc.stop(); } catch(e) {}
+    }
+    
+    if (currentShots.length > 0) {
+        newStringBtn.style.display = 'block';
+    }
+}
+
+stopBtn.addEventListener('click', stopTimer);
+
+newStringBtn.addEventListener('click', () => {
+    if (currentShots.length === 0) return;
+    
+    const historyBlock = document.createElement('div');
+    historyBlock.className = 'string-block';
+    
+    const header = document.createElement('div');
+    header.className = 'string-header';
+    header.innerHTML = `<span>Run ${runCount}</span> <span>${currentShots[currentShots.length-1].toFixed(2)}s</span>`;
+    
+    const splitsClone = splitsDiv.cloneNode(true);
+    splitsClone.id = '';
+    
+    historyBlock.appendChild(header);
+    historyBlock.appendChild(splitsClone);
+    
+    const histContainer = document.getElementById('historyContainer');
+    histContainer.insertBefore(historyBlock, currentStringDiv.nextSibling);
+    
+    runCount++;
+    currentShots = [];
+    splitsDiv.innerHTML = '';
+    display.innerText = "0.00";
+    newStringBtn.style.display = 'none';
+    currentStringDiv.style.display = 'none';
+    startBtn.innerText = "START";
 });
