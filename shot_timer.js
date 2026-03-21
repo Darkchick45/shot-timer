@@ -58,16 +58,20 @@ startBtn.addEventListener('click', async () => {
         return;
     }
     
+    const isResume = startBtn.innerText === "RESUME";
+
     // UI Updates
     startBtn.style.display = 'none';
     settingsPanel.style.display = 'none';
     newStringBtn.style.display = 'none';
     currentStringDiv.style.display = 'block';
     
-    // Clear current run (but keep history)
-    currentShots = [];
-    splitsDiv.innerHTML = '';
-    display.innerText = "READY";
+    // Clear current run ONLY if it's a fresh start
+    if (!isResume) {
+        currentShots = [];
+        splitsDiv.innerHTML = '';
+        display.innerText = "READY";
+    }
     
     // Calculate Delay
     let delayMs = 0;
@@ -194,8 +198,11 @@ function updateDisplay() {
 function stopTimer() {
     isRunning = false;
     stopBtn.style.display = 'none';
-    startBtn.style.display = 'block';
+    
+    startBtn.className = "btn btn-small-blue";
     startBtn.innerText = "RESUME";
+    startBtn.style.display = 'block';
+    
     settingsPanel.style.display = 'block';
     
     if (parOsc) {
@@ -203,6 +210,7 @@ function stopTimer() {
     }
     
     if (currentShots.length > 0) {
+        newStringBtn.className = "btn btn-large-green";
         newStringBtn.style.display = 'block';
     }
 }
@@ -247,13 +255,18 @@ newStringBtn.addEventListener('click', async () => {
     
     currentShots = [];
     splitsDiv.innerHTML = '';
-    display.innerText = "0.00";
+    display.innerText = "READY";
     newStringBtn.style.display = 'none';
     currentStringDiv.style.display = 'none';
+    
+    startBtn.className = "btn btn-large-green";
     startBtn.innerText = "START";
     
     newStringBtn.disabled = false;
     newStringBtn.innerText = "START";
+    
+    // Auto-start the new round seamlessly
+    startBtn.click();
 });
 
 function renderHistory() {

@@ -175,12 +175,22 @@
             transform: scale(0.98);
         }
 
-        #startBtn {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-            padding: 50px 20px;
-            font-size: 2.5rem;
+        .btn-large-green {
+            background: var(--primary) !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
+            padding: 50px 20px !important;
+            font-size: 2.5rem !important;
+            margin-bottom: 10px !important;
+        }
+
+        .btn-small-blue {
+            background: #3b82f6 !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+            padding: 18px !important;
+            font-size: 1.3rem !important;
+            margin-bottom: 10px !important;
         }
 
         #stopBtn {
@@ -190,16 +200,7 @@
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
             padding: 50px 20px;
             font-size: 2.5rem;
-        }
-        
-        #newStringBtn {
-            background: #3b82f6; /* Blue */
-            color: white;
-            display: none;
-            padding: 50px 20px;
-            font-size: 2.5rem;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            margin-bottom: 10px;
         }
 
         /* History & Splits */
@@ -288,9 +289,9 @@
         </div>
     </div>
 
-    <button id="startBtn" class="btn">START</button>
+    <button id="newStringBtn" class="btn btn-large-green" style="display: none;">START</button>
+    <button id="startBtn" class="btn btn-large-green">START</button>
     <button id="stopBtn" class="btn">STOP</button>
-    <button id="newStringBtn" class="btn">START</button>
 
     <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; margin-top: 10px;">
         <button id="exportBtn" class="btn" style="font-size: 1rem; padding: 12px; background: rgba(255,255,255,0.1); flex: 1;">EXPORT JSON</button>
