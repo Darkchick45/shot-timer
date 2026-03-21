@@ -18,6 +18,12 @@ const settingsPanel = document.getElementById('settingsPanel');
 const delayType = document.getElementById('delayType');
 const parTimeInput = document.getElementById('parTime');
 const sensitivitySlider = document.getElementById('sensitivity');
+const sensValueDisplay = document.getElementById('sensValueDisplay');
+
+// Update UI number when sliding
+sensitivitySlider.addEventListener('input', (e) => {
+    sensValueDisplay.innerText = e.target.value;
+});
 
 let currentShots = [];
 let runCount = 1;
