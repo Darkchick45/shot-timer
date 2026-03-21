@@ -28,8 +28,16 @@ sensitivitySlider.addEventListener('input', (e) => {
     sensValueDisplay.innerText = e.target.value;
 });
 
-let currentShots = [];
 let allRuns = [];
+try {
+    const localData = localStorage.getItem('shotTimer_allRuns');
+    if (localData) {
+        allRuns = JSON.parse(localData);
+        // Wait for DOM to load before rendering
+        setTimeout(renderHistory, 100);
+    }
+} catch (e) { console.error('Storage err:', e); }
+
 let parOsc; // Keep track so we can cancel it if stopped early
 
 startBtn.addEventListener('click', async () => {
@@ -292,6 +300,11 @@ function renderHistory() {
         
         histContainer.insertBefore(historyBlock, currentStringDiv.nextSibling);
     });
+
+    // Automatically backup to local storage
+    try {
+        localStorage.setItem('shotTimer_allRuns', JSON.stringify(allRuns));
+    } catch (e) {}
 }
 
 // EXPORT / IMPORT LOGIC
