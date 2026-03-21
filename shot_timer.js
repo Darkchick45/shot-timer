@@ -22,7 +22,6 @@ const sensValueDisplay = document.getElementById('sensValueDisplay');
 const exportBtn = document.getElementById('exportBtn');
 const importBtn = document.getElementById('importBtn');
 const importFile = document.getElementById('importFile');
-const runLocationInput = document.getElementById('runLocation');
 
 // Update UI number when sliding
 sensitivitySlider.addEventListener('input', (e) => {
@@ -202,13 +201,36 @@ function stopTimer() {
 
 stopBtn.addEventListener('click', stopTimer);
 
-newStringBtn.addEventListener('click', () => {
+function getGeoLocation() {
+    return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+            resolve("Geo Not Supported");
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                resolve(`${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`);
+            },
+            (err) => {
+                resolve("Location Denied");
+            },
+            { timeout: 4000 }
+        );
+    });
+}
+
+newStringBtn.addEventListener('click', async () => {
     if (currentShots.length === 0) return;
+    
+    newStringBtn.disabled = true;
+    newStringBtn.innerText = "SAVING...";
+
+    const geoLoc = await getGeoLocation();
     
     const runData = {
         id: Date.now(),
         date: new Date().toLocaleString(),
-        location: runLocationInput.value || 'Home Range',
+        location: geoLoc,
         shots: [...currentShots]
     };
     allRuns.push(runData);
@@ -221,6 +243,9 @@ newStringBtn.addEventListener('click', () => {
     newStringBtn.style.display = 'none';
     currentStringDiv.style.display = 'none';
     startBtn.innerText = "START";
+    
+    newStringBtn.disabled = false;
+    newStringBtn.innerText = "SAVE & NEW STRING";
 });
 
 function renderHistory() {
