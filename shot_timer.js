@@ -195,7 +195,7 @@ function stopTimer() {
     isRunning = false;
     stopBtn.style.display = 'none';
     startBtn.style.display = 'block';
-    startBtn.innerText = "RESUME / START";
+    startBtn.innerText = "RESUME";
     settingsPanel.style.display = 'block';
     
     if (parOsc) {
@@ -253,7 +253,7 @@ newStringBtn.addEventListener('click', async () => {
     startBtn.innerText = "START";
     
     newStringBtn.disabled = false;
-    newStringBtn.innerText = "SAVE & NEW ROUND";
+    newStringBtn.innerText = "START";
 });
 
 function renderHistory() {
