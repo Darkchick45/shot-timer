@@ -260,6 +260,12 @@
             </div>
         </div>
         <div class="setting-row">
+            <span class="setting-label">Location / Notes</span>
+            <div>
+                <input type="text" id="runLocation" placeholder="e.g. Indoor Range" style="width: 120px;">
+            </div>
+        </div>
+        <div class="setting-row">
             <span class="setting-label">Auto-Stop (Shots)</span>
             <div>
                 <input type="number" id="targetShots" value="0" min="0" placeholder="0 = infinite">
@@ -281,6 +287,12 @@
     <button id="startBtn" class="btn">START</button>
     <button id="stopBtn" class="btn">STOP</button>
     <button id="newStringBtn" class="btn">SAVE & NEW STRING</button>
+
+    <div style="display: flex; gap: 10px; width: 100%; max-width: 400px; margin-top: 10px;">
+        <button id="exportBtn" class="btn" style="font-size: 1rem; padding: 12px; background: rgba(255,255,255,0.1); flex: 1;">EXPORT JSON</button>
+        <button id="importBtn" class="btn" style="font-size: 1rem; padding: 12px; background: rgba(255,255,255,0.1); flex: 1;">IMPORT JSON</button>
+        <input type="file" id="importFile" style="display: none;" accept=".json">
+    </div>
 
     <div class="history-container" id="historyContainer">
         <!-- Current String will populate here -->

@@ -19,6 +19,10 @@ const parTimeInput = document.getElementById('parTime');
 const targetShotsInput = document.getElementById('targetShots');
 const sensitivitySlider = document.getElementById('sensitivity');
 const sensValueDisplay = document.getElementById('sensValueDisplay');
+const exportBtn = document.getElementById('exportBtn');
+const importBtn = document.getElementById('importBtn');
+const importFile = document.getElementById('importFile');
+const runLocationInput = document.getElementById('runLocation');
 
 // Update UI number when sliding
 sensitivitySlider.addEventListener('input', (e) => {
@@ -26,7 +30,7 @@ sensitivitySlider.addEventListener('input', (e) => {
 });
 
 let currentShots = [];
-let runCount = 1;
+let allRuns = [];
 let parOsc; // Keep track so we can cancel it if stopped early
 
 startBtn.addEventListener('click', async () => {
@@ -201,27 +205,109 @@ stopBtn.addEventListener('click', stopTimer);
 newStringBtn.addEventListener('click', () => {
     if (currentShots.length === 0) return;
     
-    const historyBlock = document.createElement('div');
-    historyBlock.className = 'string-block';
+    const runData = {
+        id: Date.now(),
+        date: new Date().toLocaleString(),
+        location: runLocationInput.value || 'Home Range',
+        shots: [...currentShots]
+    };
+    allRuns.push(runData);
     
-    const header = document.createElement('div');
-    header.className = 'string-header';
-    header.innerHTML = `<span>Run ${runCount}</span> <span>${currentShots[currentShots.length-1].toFixed(2)}s</span>`;
+    renderHistory();
     
-    const splitsClone = splitsDiv.cloneNode(true);
-    splitsClone.id = '';
-    
-    historyBlock.appendChild(header);
-    historyBlock.appendChild(splitsClone);
-    
-    const histContainer = document.getElementById('historyContainer');
-    histContainer.insertBefore(historyBlock, currentStringDiv.nextSibling);
-    
-    runCount++;
     currentShots = [];
     splitsDiv.innerHTML = '';
     display.innerText = "0.00";
     newStringBtn.style.display = 'none';
     currentStringDiv.style.display = 'none';
     startBtn.innerText = "START";
+});
+
+function renderHistory() {
+    const histContainer = document.getElementById('historyContainer');
+    
+    // Remove old saved runs from UI
+    document.querySelectorAll('.history-block-saved').forEach(el => el.remove());
+    
+    // Render in reverse (newest on top)
+    [...allRuns].reverse().forEach((run, index) => {
+        const historyBlock = document.createElement('div');
+        historyBlock.className = 'string-block history-block-saved';
+        
+        const header = document.createElement('div');
+        header.className = 'string-header';
+        
+        const runNum = allRuns.length - index;
+        header.innerHTML = `<span>Run ${runNum} <span style="font-size:0.75rem; font-weight:normal; display:block; color:var(--text-muted);">${run.date} - ${run.location}</span></span> <span>${run.shots[run.shots.length-1].toFixed(2)}s</span>`;
+        
+        const splitsClone = document.createElement('div');
+        splitsClone.style.marginTop = '10px';
+        
+        let lastTime = 0;
+        run.shots.forEach((time, i) => {
+            const split = (time - lastTime).toFixed(2);
+            lastTime = time;
+            
+            const entry = document.createElement('div');
+            entry.className = 'shot-entry';
+            
+            const shotNum = document.createElement('span');
+            shotNum.innerText = `Shot ${i + 1}`;
+            
+            const times = document.createElement('span');
+            times.innerHTML = `${time.toFixed(2)}s <span class="split-time">(+${split})</span>`;
+            
+            entry.appendChild(shotNum);
+            entry.appendChild(times);
+            splitsClone.prepend(entry); // Prepend to show last shot at top
+        });
+        
+        historyBlock.appendChild(header);
+        historyBlock.appendChild(splitsClone);
+        
+        histContainer.insertBefore(historyBlock, currentStringDiv.nextSibling);
+    });
+}
+
+// EXPORT / IMPORT LOGIC
+exportBtn.addEventListener('click', () => {
+    if (allRuns.length === 0) {
+        alert("No runs to export. Record some shots first!");
+        return;
+    }
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allRuns, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", `shot_timer_export_${Date.now()}.json`);
+    document.body.appendChild(dlAnchorElem);
+    dlAnchorElem.click();
+    dlAnchorElem.remove();
+});
+
+importBtn.addEventListener('click', () => {
+    importFile.click();
+});
+
+importFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const importedData = JSON.parse(event.target.result);
+            if (Array.isArray(importedData)) {
+                allRuns = allRuns.concat(importedData);
+                renderHistory();
+                alert(`Successfully imported ${importedData.length} runs!`);
+            } else {
+                alert("File format not recognized (must be a JSON array of runs).");
+            }
+        } catch(err) {
+            console.error(err);
+            alert("Error parsing JSON file. Is it corrupted?");
+        }
+        importFile.value = '';
+    };
+    reader.readAsText(file);
 });
