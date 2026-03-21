@@ -14,9 +14,9 @@ const splitsDiv = document.getElementById('splits');
 const currentStringDiv = document.getElementById('currentString');
 const settingsPanel = document.getElementById('settingsPanel');
 
-// Inputs
 const delayType = document.getElementById('delayType');
 const parTimeInput = document.getElementById('parTime');
+const targetShotsInput = document.getElementById('targetShots');
 const sensitivitySlider = document.getElementById('sensitivity');
 const sensValueDisplay = document.getElementById('sensValueDisplay');
 
@@ -167,6 +167,11 @@ function recordShot(time) {
     
     document.body.style.background = '#ef4444';
     setTimeout(() => document.body.style.background = 'var(--bg-color)', 50);
+
+    const target = parseInt(targetShotsInput.value, 10);
+    if (target > 0 && currentShots.length >= target) {
+        stopTimer();
+    }
 }
 
 function updateDisplay() {
