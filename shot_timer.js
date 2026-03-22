@@ -216,7 +216,7 @@ function stopTimer() {
     }
     
     if (currentShots.length > 0) {
-        newStringBtn.className = "btn btn-large-green";
+        newStringBtn.className = "btn btn-start-massive";
         newStringBtn.style.display = 'block';
     }
 }
@@ -265,7 +265,7 @@ newStringBtn.addEventListener('click', async () => {
     newStringBtn.style.display = 'none';
     currentStringDiv.style.display = 'none';
     
-    startBtn.className = "btn btn-large-green";
+    startBtn.className = "btn btn-start-massive";
     startBtn.innerText = "START";
     
     newStringBtn.disabled = false;
