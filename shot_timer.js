@@ -62,6 +62,7 @@ startBtn.addEventListener('click', async () => {
     const isResume = startBtn.innerText === "RESUME";
 
     // UI Updates
+    document.querySelectorAll('.data-actions').forEach(el => el.style.display = 'none');
     startBtn.style.display = 'none';
     settingsPanel.style.display = 'none';
     newStringBtn.style.display = 'none';
@@ -208,6 +209,7 @@ function stopTimer() {
     startBtn.style.display = 'block';
     
     settingsPanel.style.display = 'block';
+    document.querySelectorAll('.data-actions').forEach(el => el.style.display = 'flex');
     
     if (parOsc) {
         try { parOsc.stop(); } catch(e) {}
