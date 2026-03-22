@@ -53,7 +53,7 @@ startBtn.addEventListener('click', async () => {
     
     let stream;
     try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true }, video: false });
     } catch (err) {
         alert("Microphone access is required.");
         return;
@@ -95,9 +95,9 @@ function playBeep() {
     
     osc.frequency.value = 1000;
     gain.gain.setValueAtTime(1, audioContext.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
     osc.start();
-    osc.stop(audioContext.currentTime + 0.5);
+    osc.stop(audioContext.currentTime + 0.3);
     
     startTime = audioContext.currentTime;
     isRunning = true;
@@ -160,6 +160,9 @@ async function initCapture(stream) {
 }
 
 function recordShot(time) {
+    // Ignore any sound registered while the start beep is playing (0.3s beep + 0.05s buffer)
+    if (time < 0.35) return;
+
     // 0.12s lockout to prevent double taps
     const lastShotTime = currentShots.length > 0 ? currentShots[currentShots.length - 1] : 0;
     if (time - lastShotTime < 0.12) return;
