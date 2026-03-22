@@ -299,6 +299,20 @@
             background: var(--danger);
             color: white;
         }
+        
+        .royal-trim-btn {
+            background: #ffffff;
+            color: #000000;
+            font-weight: 900;
+            font-size: 1.1rem;
+            padding: 16px 12px;
+            flex: 1;
+            /* Detailed Royal Trim using repeating gradients */
+            border: 8px solid #d4af37;
+            border-image: repeating-linear-gradient(-45deg, #b8860b 0%, #d4af37 5%, #fff8dc 10%, #d4af37 15%, #b8860b 20%) 8;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), inset 0 0 15px rgba(212, 175, 55, 0.5);
+            margin: 0 4px;
+        }
 
         /* Glitch Text Effect */
         .glitch-text {
@@ -396,8 +410,8 @@
     <button id="stopBtn" class="btn">STOP</button>
 
     <div class="data-actions" style="display: flex; gap: 10px; width: 100%; max-width: 400px; margin-top: 10px;">
-        <button id="exportBtn" class="btn glitch-text" data-text="EXPORT" style="font-size: 1rem; padding: 12px; background: #ffffff; color: #000000; font-weight: 800; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); border: 3px solid #d4af37; flex: 1;">EXPORT</button>
-        <button id="importBtn" class="btn glitch-text" data-text="IMPORT" style="font-size: 1rem; padding: 12px; background: #ffffff; color: #000000; font-weight: 800; box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); border: 3px solid #d4af37; flex: 1;">IMPORT</button>
+        <button id="exportBtn" class="btn glitch-text royal-trim-btn" data-text="EXPORT">EXPORT</button>
+        <button id="importBtn" class="btn glitch-text royal-trim-btn" data-text="IMPORT">IMPORT</button>
         <input type="file" id="importFile" style="display: none;" accept=".json">
     </div>
     
