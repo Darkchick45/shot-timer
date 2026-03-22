@@ -281,15 +281,15 @@ function renderHistory() {
     // Remove old saved runs from UI
     document.querySelectorAll('.history-block-saved').forEach(el => el.remove());
     
-    // Render in reverse (newest on top)
-    [...allRuns].reverse().forEach((run, index) => {
+    // Render normal order, because insertBefore pushes older runs down, leaving newest on top!
+    allRuns.forEach((run, index) => {
         const historyBlock = document.createElement('div');
         historyBlock.className = 'string-block history-block-saved';
         
         const header = document.createElement('div');
         header.className = 'string-header';
         
-        const runNum = allRuns.length - index;
+        const runNum = index + 1;
         const lastShotTime = run.shots.length > 0 ? run.shots[run.shots.length-1].toFixed(2) : "0.00";
         header.innerHTML = `
             <div style="line-height: 1.2;">
