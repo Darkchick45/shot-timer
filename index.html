@@ -43,12 +43,13 @@
         }
 
         .header {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-muted);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
             margin-bottom: 20px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px var(--primary-glow);
         }
 
         #display {
@@ -105,15 +106,20 @@
         }
 
         .setting-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
+            color: var(--primary);
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--primary-glow);
         }
         
         .setting-value {
-            font-family: 'Inter', monospace; /* Changed from Orbitron */
+            font-family: 'Inter', monospace;
             color: var(--primary);
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-shadow: 0 0 15px var(--primary-glow);
         }
 
         .slider-labels {
@@ -124,10 +130,12 @@
             margin-top: 8px;
         }
 
-         input[type="number"], select {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text);
+         input[type="text"], input[type="number"], select {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--primary);
+            font-weight: 800;
+            text-shadow: 0 0 10px var(--primary-glow);
             padding: 8px 12px;
             border-radius: 10px;
             font-size: 1rem;
@@ -135,11 +143,12 @@
             text-align: right;
             font-family: 'Inter', sans-serif;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
         
-        input[type="number"]:focus, select:focus {
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
             border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
         }
 
         input[type="number"] {
