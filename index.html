@@ -20,6 +20,8 @@
             --primary-glow: rgba(16, 185, 129, 0.5);
             --danger: #ef4444;
             --accent: #3b82f6;
+            --neon-blue: #38bdf8; /* Light cyan blue */
+            --neon-blue-glow: rgba(56, 189, 248, 0.5);
         }
 
         body {
@@ -45,11 +47,11 @@
         .header {
             font-size: 1.5rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--neon-blue);
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 3px;
-            text-shadow: 0 0 15px var(--primary-glow);
+            text-shadow: 0 0 15px var(--neon-blue-glow);
         }
 
         #display {
@@ -106,20 +108,20 @@
         }
 
         .setting-label {
-            color: var(--primary);
+            color: var(--neon-blue);
             font-size: 0.95rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-shadow: 0 0 10px var(--primary-glow);
+            text-shadow: 0 0 10px var(--neon-blue-glow);
         }
         
         .setting-value {
             font-family: 'Inter', monospace;
-            color: var(--primary);
+            color: var(--neon-blue);
             font-weight: 800;
             font-size: 1.1rem;
-            text-shadow: 0 0 15px var(--primary-glow);
+            text-shadow: 0 0 15px var(--neon-blue-glow);
         }
 
         .slider-labels {
@@ -132,10 +134,10 @@
 
          input[type="text"], input[type="number"], select {
             background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--neon-blue);
             font-weight: 800;
-            text-shadow: 0 0 10px var(--primary-glow);
+            text-shadow: 0 0 10px var(--neon-blue-glow);
             padding: 8px 12px;
             border-radius: 10px;
             font-size: 1rem;
@@ -147,8 +149,8 @@
         }
         
         input[type="text"]:focus, input[type="number"]:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px var(--neon-blue-glow);
         }
 
         input[type="number"] {
