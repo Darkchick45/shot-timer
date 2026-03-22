@@ -22,6 +22,7 @@ const sensValueDisplay = document.getElementById('sensValueDisplay');
 const exportBtn = document.getElementById('exportBtn');
 const importBtn = document.getElementById('importBtn');
 const importFile = document.getElementById('importFile');
+const deleteAllBtn = document.getElementById('deleteAllBtn');
 
 // Update UI number when sliding
 sensitivitySlider.addEventListener('input', (e) => {
@@ -381,5 +382,13 @@ document.getElementById('historyContainer').addEventListener('click', (e) => {
             allRuns = allRuns.filter(r => r.id !== idToRemove);
             renderHistory();
         }
+    }
+});
+
+deleteAllBtn.addEventListener('click', () => {
+    if (allRuns.length === 0) return;
+    if (confirm("Are you sure you want to delete ALL history? This cannot be undone.")) {
+        allRuns = [];
+        renderHistory();
     }
 });
