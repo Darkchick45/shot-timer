@@ -318,10 +318,16 @@ function renderHistory() {
             ? `<span style="font-size:0.7rem; font-weight:normal; display:block; color:var(--text-muted); margin-top:1px; opacity:0.8;">${settingsParts.join(' · ')}</span>`
             : '';
         
+        // Render location as a Google Maps link if it looks like coordinates
+        const isCoords = /^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(run.location);
+        const locationHtml = isCoords
+            ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(run.location)}" target="_blank" rel="noopener" style="color:var(--text-muted); text-decoration:underline dotted;">${run.location}</a>`
+            : run.location;
+
         header.innerHTML = `
             <div style="line-height: 1.2;">
                 <span>Run ${runNum}</span>
-                <span style="font-size:0.75rem; font-weight:normal; display:block; color:var(--text-muted); margin-top:2px;">${run.date} - ${run.location}</span>
+                <span style="font-size:0.75rem; font-weight:normal; display:block; color:var(--text-muted); margin-top:2px;">${run.date} - ${locationHtml}</span>
                 ${settingsStr}
             </div>
             <div style="display: flex; align-items: center;">
