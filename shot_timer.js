@@ -415,14 +415,22 @@ importFile.addEventListener('change', (e) => {
     reader.readAsText(file);
 });
 
-// DELETION LOGIC
+// HISTORY CONTAINER CLICK LOGIC
 document.getElementById('historyContainer').addEventListener('click', (e) => {
+    // Deletion logic
     if (e.target.classList.contains('delete-btn')) {
         const idToRemove = parseInt(e.target.getAttribute('data-id'), 10);
         if (confirm("Delete this run? This cannot be undone.")) {
             allRuns = allRuns.filter(r => r.id !== idToRemove);
             renderHistory();
         }
+        return;
+    }
+    
+    // Maps link logic
+    const mapUrl = e.target.getAttribute('data-mapurl');
+    if (mapUrl) {
+        window.open(mapUrl, '_blank', 'noopener,noreferrer');
     }
 });
 
