@@ -253,7 +253,13 @@ newStringBtn.addEventListener('click', async () => {
         id: Date.now(),
         date: new Date().toLocaleString(),
         location: geoLoc,
-        shots: [...currentShots]
+        shots: [...currentShots],
+        settings: {
+            delayType: delayType.value,
+            parTime: parseFloat(parTimeInput.value) || 0,
+            targetShots: parseInt(targetShotsInput.value, 10) || 0,
+            sensitivity: parseInt(sensitivitySlider.value, 10)
+        }
     };
     allRuns.push(runData);
     
@@ -291,10 +297,26 @@ function renderHistory() {
         
         const runNum = index + 1;
         const lastShotTime = run.shots.length > 0 ? run.shots[run.shots.length-1].toFixed(2) : "0.00";
+        
+        // Build settings summary string if settings were saved
+        let settingsParts = [];
+        if (run.settings) {
+            const s = run.settings;
+            const delayLabel = s.delayType === 'fixed' ? 'Fixed 3s delay' : s.delayType === 'random' ? 'Random delay' : 'No delay';
+            settingsParts.push(delayLabel);
+            if (s.parTime > 0) settingsParts.push(`Par ${s.parTime}s`);
+            if (s.targetShots > 0) settingsParts.push(`Auto-stop @${s.targetShots}`);
+            settingsParts.push(`Sensitivity ${s.sensitivity}`);
+        }
+        const settingsStr = settingsParts.length > 0
+            ? `<span style="font-size:0.7rem; font-weight:normal; display:block; color:var(--text-muted); margin-top:1px; opacity:0.8;">${settingsParts.join(' · ')}</span>`
+            : '';
+        
         header.innerHTML = `
             <div style="line-height: 1.2;">
                 <span>Run ${runNum}</span>
                 <span style="font-size:0.75rem; font-weight:normal; display:block; color:var(--text-muted); margin-top:2px;">${run.date} - ${run.location}</span>
+                ${settingsStr}
             </div>
             <div style="display: flex; align-items: center;">
                 <span>${lastShotTime}s</span>
