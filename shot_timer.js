@@ -318,10 +318,12 @@ function renderHistory() {
             ? `<span style="font-size:0.7rem; font-weight:normal; display:block; color:var(--text-muted); margin-top:1px; opacity:0.8;">${settingsParts.join(' · ')}</span>`
             : '';
         
-        // Render location as a Google Maps link if it looks like coordinates
+        // Render location as a tappable link if it looks like coordinates
+        // Note: use data-mapurl + window.open() instead of <a target="_blank">
+        // because target="_blank" is silently blocked in iOS PWA standalone mode
         const isCoords = /^-?\d+\.\d+,\s*-?\d+\.\d+$/.test(run.location);
         const locationHtml = isCoords
-            ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(run.location)}" target="_blank" rel="noopener" style="color:var(--text-muted); text-decoration:underline dotted;">${run.location}</a>`
+            ? `<span data-mapurl="https://www.google.com/maps?q=${encodeURIComponent(run.location)}" style="color:var(--text-muted); text-decoration:underline dotted; cursor:pointer;">${run.location}</span>`
             : run.location;
 
         header.innerHTML = `
