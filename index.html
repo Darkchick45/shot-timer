@@ -38,10 +38,19 @@
         h1 {
             font-family: 'Orbitron', sans-serif;
             margin-top: 10px;
+            margin-bottom: 2px;
             font-size: 1.8rem;
             color: var(--primary);
             text-transform: uppercase;
             letter-spacing: 2px;
+        }
+
+        #appVersion {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin: 0 0 10px 0;
+            opacity: 0.6;
         }
 
         #display {
@@ -267,6 +276,7 @@
 <body>
 
     <h1>Shot Timer Pro</h1>
+    <p id="appVersion">v0.0.0</p>
     
     <div id="display">0.00</div>
     
@@ -329,6 +339,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js"></script>
+    <script src="version.js"></script>
     <script src="shot_timer.js"></script>
 </body>
 </html>
