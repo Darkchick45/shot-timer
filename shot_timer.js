@@ -40,6 +40,7 @@ try {
 } catch (e) { console.error('Storage err:', e); }
 
 let parOsc; // Keep track so we can cancel it if stopped early
+let currentRunSettings = null; // Settings snapshot captured at start time
 
 startBtn.addEventListener('click', async () => {
     noSleep.enable();
@@ -60,6 +61,16 @@ startBtn.addEventListener('click', async () => {
     }
     
     const isResume = startBtn.innerText === "RESUME";
+
+    // Capture settings at the moment the run begins (only on fresh start)
+    if (!isResume) {
+        currentRunSettings = {
+            delayType: delayType.value,
+            parTime: parseFloat(parTimeInput.value) || 0,
+            targetShots: parseInt(targetShotsInput.value, 10) || 0,
+            sensitivity: parseInt(sensitivitySlider.value, 10)
+        };
+    }
 
     // UI Updates
     document.querySelectorAll('.data-actions').forEach(el => el.style.display = 'none');
@@ -254,12 +265,7 @@ newStringBtn.addEventListener('click', async () => {
         date: new Date().toLocaleString(),
         location: geoLoc,
         shots: [...currentShots],
-        settings: {
-            delayType: delayType.value,
-            parTime: parseFloat(parTimeInput.value) || 0,
-            targetShots: parseInt(targetShotsInput.value, 10) || 0,
-            sensitivity: parseInt(sensitivitySlider.value, 10)
-        }
+        settings: currentRunSettings ? { ...currentRunSettings } : null
     };
     allRuns.push(runData);
     
