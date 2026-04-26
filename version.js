@@ -1,1 +1,1 @@
-document.getElementById('appVersion').textContent = 'v2026-04-19 · b3f33fb';
+document.getElementById('appVersion').textContent = 'v2026-04-26 · 3425f62';

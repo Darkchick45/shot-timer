@@ -166,12 +166,12 @@ async function initCapture(stream) {
         if (threshold < 0.02) threshold = 0.02;
 
         if (peak > threshold) {
-            recordShot(audioContext.currentTime - startTime);
+            recordShot(audioContext.currentTime - startTime, peak);
         }
     };
 }
 
-function recordShot(time) {
+function recordShot(time, peak = null) {
     // Ignore any sound registered while the start beep is playing (0.3s beep + 0.05s buffer)
     if (time < 0.35) return;
 
@@ -185,8 +185,14 @@ function recordShot(time) {
     const entry = document.createElement('div');
     entry.className = 'shot-entry';
     
+    let dbInfo = '';
+    if (peak !== null && peak > 0) {
+        const db = 20 * Math.log10(peak);
+        dbInfo = `<span style="font-size:0.75rem; color:var(--text-muted); margin-left:6px;">${db.toFixed(1)}dB</span>`;
+    }
+
     const shotNum = document.createElement('span');
-    shotNum.innerText = `Shot ${currentShots.length}`;
+    shotNum.innerHTML = `Shot ${currentShots.length}${dbInfo}`;
     
     const times = document.createElement('span');
     times.innerHTML = `${time.toFixed(2)}s <span class="split-time">(+${split})</span>`;
